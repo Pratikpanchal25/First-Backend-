@@ -5,7 +5,7 @@ import { User } from "../models/user.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
 import { deleteOnCloudinary } from "../utils/deleteOnCloudinary.js";
-import mongoose from "mongoose";
+
 
 const generateRefreshAndAccessToken = async (userId) => {
   try {
@@ -440,7 +440,7 @@ const getWatchHistory = asyncHandler(async (req, res) => {
   const user = await User.aggregate([
     {
       $match: {
-        _id: new mongoose.Types.ObjectId(req.user._id)
+        _id: req.user._id,
       },
     },
     {
@@ -469,11 +469,11 @@ const getWatchHistory = asyncHandler(async (req, res) => {
           },
           {
             $addFields: {
-             owner: {
-              $first: "$owner"
-             }
-            }
-          }
+              owner: {
+                $first: "$owner",
+              },
+            },
+          },
         ],
       },
     },
@@ -482,8 +482,15 @@ const getWatchHistory = asyncHandler(async (req, res) => {
   console.log(user);
   console.log(user[0]);
 
-  return res.status(200)
-  .json(new ApiResponse(200, user[0].watchHistory , "WatchHistory Fetched SuccessFully"))
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        user[0].watchHistory,
+        "WatchHistory Fetched SuccessFully"
+      )
+    );
 });
 
 export {
@@ -497,5 +504,5 @@ export {
   updateAvatar,
   updateCoverImage,
   getChannelStatus,
-  getWatchHistory
+  getWatchHistory,
 };
